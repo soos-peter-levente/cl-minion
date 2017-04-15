@@ -2,7 +2,7 @@
 
 ## Description
 
-A JSON parser I used to teach myself about parsers, recursion and
+A JSON parser I wrote to teach myself about parsers, recursion and
 Common Lisp. It's not meant for production use - its brevity is cute
 to my eyes, but there are no optimizations to speak of. As it stands,
 `cl-minion` is about 50% slower than `jsown` (informally tested).
