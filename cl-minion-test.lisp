@@ -28,40 +28,34 @@
   (is (type-of (parse json-2)) 'CONS)
   (is (type-of (parse json-3)) 'CONS))
 
-(defun time-minion (n)
-  (time (loop :for i from 0 to n :do (parse json-3))))
-
-(defun profile-minion (&key (clear nil))
-  #+SBCL
-  (let ((to-profile
-          '(cl-minion:parse
-            cl-minion::val
-            cl-minion::arr
-            cl-minion::obj
-            cl-minion::str
-            cl-minion::key
-            cl-minion::lst
-            cl-minion::tup
-            cl-minion::lit
-            cl-minion::num
-            cl-minion::match
-            cl-minion::match-if
-            cl-minion::collect-char
-            cl-minion::collect-literal
-            cl-minion::collect*
-            cl-minion::collect-number)))
-    (when clear (sb-profile:reset))
-    (sb-profile:profile to-profile)
-    (parse json-3)
-    (sb-profile:report)))
-
-(defun run-tests (&optional (n 1000) (clear nil))
+(defun run-tests (&key (n 1000) (clear nil) json-string )
   (format t "RUNNING  REGRESSION TESTS...")
   (run! 'cl-minion-test)
   (format t "RUN ~d TIMES...~%" n)
-  (time-minion n)
+  (time (loop :for i from 0 to n :do (parse json-3)))
   (format t "RUN PROFILER...")
-  (profile-minion :clear clear))
+  #+SBCL
+  (progn
+    (when clear (sb-profile:reset))
+    (sb-profile:profile cl-minion:parse
+                        cl-minion::val
+                        cl-minion::arr
+                        cl-minion::obj
+                        cl-minion::str
+                        cl-minion::key
+                        cl-minion::lst
+                        cl-minion::tup
+                        cl-minion::lit
+                        cl-minion::num
+                        cl-minion::match
+                        cl-minion::match-if
+                        cl-minion::collect-char
+                        cl-minion::collect-literal
+                        cl-minion::collect*
+                        cl-minion::collect-number))
+  (parse (or json-string json-3))
+  (sb-profile:report)
+  (sb-profile:unprofile))
 
 (defparameter json-1
   "{
