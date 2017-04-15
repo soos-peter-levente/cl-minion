@@ -1,4 +1,6 @@
-(defun parse-json (json-string)
+(in-package :cl-minion)
+
+(defun parse (json-string)
   (list :json (val (make-string-input-stream json-string))))
 
 (defun val (s)
@@ -47,40 +49,3 @@
         for n = (read-char s nil)
         :unless (char= e n) :do (error "Unrecognized keyword!")
         :finally (return value)))
-
-;;;; UTILITY
-(defmacro w/o-wp (stream &body body)
-  ;; Wrap the read function definition BODY with peek-char calls,
-  ;; so as to strip whitespace characters before and after it.
-  `(progn (peek-char t ,stream nil nil)
-          (let ((value ,@body))
-            (peek-char t ,stream nil nil)
-            value)))
-
-(defun match (char s)
-  ;; Make sure we have character CHAR in the stream up next.
-  ;; Skip at the same time.
-  (unless (char= char (read-char s nil))
-    (error "Problem.")))
-
-(defun match-if (char s)
-  (let ((pos (peek-char t s nil nil)))
-    (when pos (when (char= char pos)) pos)))
-
-;;;;; A COUPLE OF TESTS
-(defun test (fn json-string)
-  (let ((s (make-string-input-stream json-string)))
-    (funcall fn s)))
-
-(progn
-  (test #'pair  "\"hello\":\"world\"")
-  (test #'pair  "\"hello\":true")
-  (test #'pair  "\"hello\":false")
-  (test #'pair  "\"hello\":null")
-  (test #'pair  "\"hello\":{\"inner\":\"depth\"}")
-  (test #'obj   "{\"hello\":\"there\"}")
-  (test #'obj   "{\"hello\":\"there\",\"beautiful\":\"girl\"}")
-  (test #'arr   "[true,false,\"hello\",{\"hello\":\"there\"}]")
-  (test #'pairs "\"hello\":\"there\",\"beautiful\":\"girl\""))
-
-(parse-json "{\"hello\": [{\"inner\":\"depth\"}, true, false], \"there\":[\"beautiful\"]}")
