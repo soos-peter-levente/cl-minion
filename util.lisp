@@ -11,8 +11,9 @@
 (defun match (char)
   ;; Make sure we have character CHAR in the stream up next.
   ;; Skip at the same time.
-  (unless (char= char (read-char *s* nil))
-    (error "Problem.")))
+  (w/o-wp
+   (unless (char= char (read-char *s* nil))
+     (error "Problem."))))
 
 (defun match-if (char)
   ;; Peek ahead one character and decide if CHAR is up next.
