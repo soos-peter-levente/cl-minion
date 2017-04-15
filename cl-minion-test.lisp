@@ -1,4 +1,32 @@
-(in-package :cl-minion)
+(defpackage :cl-minion-test
+  (:use :common-lisp :fiveam :cl-minion)
+  (:nicknames :minion-test)
+  (:export :run-test))
+
+(in-package :cl-minion-test)
+
+(def-suite cl-minion-test
+  :description "Regression testing suite for Minion JSON parser.")
+
+(test cl-minion-test
+  (is (parse "{\"hello\":null}")
+      '(:OBJ ((:KEY "hello" :NUL NIL))))
+  (is (parse "{\"hello\":\"world\"}")
+      '(:OBJ ((:KEY "hello" :STR "world"))))
+  (is (parse "{\"hello\":{\"nested\":\"json\"}}")
+      '(:OBJ ((:KEY "hello" :OBJ ((:KEY "nested" :STR "json"))))))
+  (is (parse "{\"hello\":{\"integer\":123}}")
+      '(:OBJ ((:KEY "hello" :OBJ ((:KEY "integer" :NUM 123))))))
+  (is (parse "{\"hello\":{\"float\":123}}")
+      '(:OBJ ((:KEY "hello" :OBJ ((:KEY "float" :NUM 123.23))))))
+  (is (parse "[{\"hello\":\"world\",\"how\":\"are\",\"you\":\"today\"}]")
+      '(:ARR ((:OBJ ((:KEY "hello" :STR "world") (:KEY "how" :STR "are")
+                     (:KEY "you" :STR "today"))))))
+  (is (parse "[true,false,false,null,true]")
+      '(:ARR ((:TRU T) (:FAL NIL) (:FAL NIL) (:NUL NIL) (:TRU T))))
+  (is (type-of (parse json-1)) 'CONS)
+  (is (type-of (parse json-2)) 'CONS)
+  (is (type-of (parse json-3)) 'CONS))
 
 (defparameter json-1
   "{
@@ -158,7 +186,4 @@
   }
 }")
 
-(progn
-  (assert (ast json-1))
-  (assert (ast json-2))
-  (assert (ast json-3)))
+(defun run-test () (run! 'cl-minion-test))

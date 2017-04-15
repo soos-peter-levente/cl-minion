@@ -3,7 +3,7 @@
   :author "Soós Péter Levente"
   :license "MIT"
   :description "A minimal JSON parser."
-
   :components ((:file "package")
                (:file "util")
+               (:file "tokens")
                (:file "cl-minion")))

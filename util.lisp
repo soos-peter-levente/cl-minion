@@ -1,6 +1,7 @@
 (in-package :cl-minion)
 
 (defparameter *collect-as-character-list* nil)
+(defparameter *s* nil)
 
 (defmacro w/o-wp (&body body)
   ;; Wrap the token function definition BODY with peek-char calls, so
