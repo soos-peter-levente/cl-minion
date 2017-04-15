@@ -31,7 +31,7 @@ to run.
 
 - Scientific notation for numeric values
 - Array elements should be stored in a vector.
-- Special character (i.e \f \n, etc.) support in strings.
+- Escaping & special character (i.e \f \n, etc.) support in strings.
 - Ban-bag for strings (keywords, for example, should not be allowed to
   contain whitespaces)
 
