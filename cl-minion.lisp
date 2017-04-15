@@ -1,4 +1,5 @@
 (in-package :cl-minion)
+
 (defparameter *s* nil)
 
 (defun ast (json)
@@ -15,7 +16,7 @@
     (t    nil)))
 
 (defun arr ()
-  (append (match #\[) (val) (collect* #'val #\,) (match #\])))
+  (append (match #\[) (list (val)) (collect* #'val #\,) (match #\])))
 
 (defun obj ()
   (append (match #\{) (lst) (match #\})))
@@ -27,14 +28,10 @@
   (append (key) (match #\:) (val)))
 
 (defun key ()
-  (match #\")
-  (list :key (loop for char = (read-char *s* nil)
-                   while (char/= char #\")
-                   collect char)))
+  (match #\") (list :key (collect-char)))
 
 (defun str () (second (key)))
 
-(defun lit (string value)
-  (loop :for e in (coerce string 'list) :for n = (read-char *s* nil)
-        :unless (char= e n) :do (error "Unrecognized keyword!")
-        :finally (return value)))
+(defun lit (string &optional value)
+  (let ((bag (collect-literal string)))
+    (or value bag)))
