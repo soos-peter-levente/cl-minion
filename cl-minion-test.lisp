@@ -28,34 +28,35 @@
   (is (type-of (parse json-2)) 'CONS)
   (is (type-of (parse json-3)) 'CONS))
 
-(defun run-tests (&key (n 1000) (clear nil) json-string )
-  (format t "RUNNING  REGRESSION TESTS...")
-  (run! 'cl-minion-test)
-  (format t "RUN ~d TIMES...~%" n)
-  (time (loop :for i from 0 to n :do (parse json-3)))
-  (format t "RUN PROFILER...")
-  #+SBCL
-  (progn
-    (when clear (sb-profile:reset))
-    (sb-profile:profile cl-minion:parse
-                        cl-minion::val
-                        cl-minion::arr
-                        cl-minion::obj
-                        cl-minion::str
-                        cl-minion::key
-                        cl-minion::lst
-                        cl-minion::tup
-                        cl-minion::lit
-                        cl-minion::num
-                        cl-minion::match
-                        cl-minion::match-if
-                        cl-minion::collect-char
-                        cl-minion::collect-literal
-                        cl-minion::collect*
-                        cl-minion::collect-number))
-  (parse (or json-string json-3))
-  (sb-profile:report)
-  (sb-profile:unprofile))
+(defun run-tests (&key (n 1000) (clear nil) json-string)
+  (let ((target (or json-string json-3)))
+    (format t "RUNNING  REGRESSION TESTS...")
+    (run! 'cl-minion-test)
+    (format t "RUN ~d TIMES...~%" n)
+    (time (loop :for i from 0 to n :do (parse target)))
+    (format t "RUN PROFILER...")
+    #+SBCL
+    (progn
+      (when clear (progn (sb-profile:unprofile)
+                         (sb-profile:reset)))
+      (sb-profile:profile cl-minion:parse
+                          cl-minion::val
+                          cl-minion::arr
+                          cl-minion::obj
+                          cl-minion::str
+                          cl-minion::key
+                          cl-minion::lst
+                          cl-minion::tup
+                          cl-minion::lit
+                          cl-minion::num
+                          cl-minion::match
+                          cl-minion::match-if
+                          cl-minion::collect-char
+                          cl-minion::collect-literal
+                          cl-minion::collect*
+                          cl-minion::collect-number))
+    (parse target)
+    (sb-profile:report)))
 
 (defparameter json-1
   "{
