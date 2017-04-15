@@ -10,7 +10,7 @@
 
 (defun match (char)
   ;; Make sure we have character CHAR in the stream up next.  Skip it.
-  (w/o-wp (or (char= char (read-char *s* nil)) (error "Problem."))))
+  (w/o-wp (if (char= char (read-char *s* nil)) (values) (error "Problem."))))
 
 (defun match-if (char)
   ;; Peek ahead one character and decide if CHAR is up next.
