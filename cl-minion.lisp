@@ -13,13 +13,13 @@
     (#\t  `(:tru ,(lit "true"  t)))
     (#\f  `(:fal ,(lit "false" nil)))
     (#\n  `(:nul ,(lit "null"  nil)))
-    (t    nil)))
-
-(defun arr ()
-  (append (match #\[) (list (val)) (collect* #'val #\,) (match #\])))
+    (t    `(:num ,(num)))))
 
 (defun obj ()
   (append (match #\{) (lst) (match #\})))
+
+(defun arr ()
+  (append (match #\[) (list (val)) (collect* #'val #\,) (match #\])))
 
 (defun lst ()
   (append (list (tup)) (collect* #'tup #\,)))
@@ -35,3 +35,6 @@
 (defun lit (string &optional value)
   (let ((bag (collect-literal string)))
     (or value bag)))
+
+(defun num ()
+  (or (collect-number) (fail)))
