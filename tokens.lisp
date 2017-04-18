@@ -11,13 +11,10 @@
     (t    `(:num ,(num)))))
 
 (defun obj ()
-  (append (match #\{) (lst) (match #\})))
+  (append (match #\{) (collect* #'tup #\, #\}) (match #\})))
 
 (defun arr ()
-  (append (match #\[) (list (val)) (collect* #'val #\,) (match #\])))
-
-(defun lst ()
-  (append (list (tup)) (collect* #'tup #\,)))
+  (append (match #\[) (collect* #'val #\, #\]) (match #\])))
 
 (defun tup ()
   (append (key) (match #\:) (val)))

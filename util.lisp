@@ -38,12 +38,14 @@
         :for n = (read-char *s* nil)
         :unless (char= e n) :do (error "Unrecognized keyword!")))
 
-(defun collect* (fn separator)
+(defun collect* (fn separator delimiter)
   ;; Call token function FN repeatedly as long as separator is
   ;; encountered in the input stream between calls.
-  (loop :for rep = (match-if separator)
-        :while (and rep (char= rep separator) (read-char *s* nil))
-        :collect (funcall fn)))
+  (unless (char= delimiter (peek-char t *s* nil nil))
+    (append (list (funcall fn))
+            (loop :for rep = (match-if separator)
+                  :while (and rep (char= rep separator) (read-char *s* nil))
+                  :collect (funcall fn)))))
 
 (defun collect-number ()
   ;; TODO: support scientific notation for big numbers
