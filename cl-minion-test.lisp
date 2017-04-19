@@ -45,7 +45,6 @@
                           cl-minion::obj
                           cl-minion::str
                           cl-minion::key
-                          cl-minion::lst
                           cl-minion::tup
                           cl-minion::lit
                           cl-minion::num
