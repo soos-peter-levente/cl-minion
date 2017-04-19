@@ -1,5 +1,6 @@
 (in-package :cl-minion)
 
+(defparameter *ban-bag* '(#\space #\newline #\formfeed #\tab))
 (defparameter *collect-as-character-list* nil)
 (defparameter *s* nil)
 
@@ -21,15 +22,17 @@
   (let ((pos (peek-char t *s* nil nil)))
     (when pos (when (char= char pos)) pos)))
 
-(defun collect-char ()
+(defun collect-char (&key (ban-bag nil) (escape-char #\\) (delimiter #\") (skip-whitespace nil))
   ;; TODO: - support special characters, i.e. \f, \n etc.
-  ;;       - add ban-bag to signal error on invalid character.
-  (labels ((collect-char% ()
-             (loop :for char = (read-char *s* nil)
-                   :while (char/= char #\")
-                   :collect char)))
-    (let ((bag (collect-char%)))
-      (if *collect-as-character-list* bag (coerce bag 'string)))))
+  (with-output-to-string (out)
+    (loop for c = (peek-char skip-whitespace *s* nil nil)
+          :while (and c (not (char= c delimiter)))
+          :do (cond ((not (member c ban-bag))
+                     (if (char= c escape-char)
+                         (format out "~a" (progn #1=(read-char *s* nil nil) #1#))
+                         (format out "~a" (read-char *s* nil nil))))
+                    (t (error "Syntax error! Unexpected character: ~a~%" (char-name c))))
+          :finally #1#)))
 
 (defun collect-literal (string)
   ;; Pop characters from stream as long as STRING can be read from it,
