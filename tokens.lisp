@@ -20,10 +20,10 @@
   (append (key) (match #\:) (val)))
 
 (defun key ()
-  (append (match #\") (list :key (collect-char))))
+  (append (match #\") (list :key (collect-char)) (match #\")))
 
 (defun str ()
-  (append (match #\") (collect-char)))
+  (first (append (match #\") (list (collect-char)) (match #\"))))
 
 (defun lit (string &optional value)
   (let ((bag (collect-literal string)))

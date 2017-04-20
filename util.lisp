@@ -28,11 +28,10 @@
     (loop for c = (peek-char skip-whitespace *s* nil nil)
           :while (and c (not (char= c delimiter)))
           :do (cond ((not (member c ban-bag))
-                     (if (char= c escape-char)
-                         (format out "~a" (progn #1=(read-char *s* nil nil) #1#))
-                         (format out "~a" (read-char *s* nil nil))))
-                    (t (error "Syntax error! Unexpected character: ~a~%" (char-name c))))
-          :finally #1#)))
+                     (format out "~a" (if (char= c escape-char)
+                                          (progn #1=(read-char *s* nil nil) #1#)
+                                          #1#)))
+                    (t (error "Syntax error! Unexpected character: ~a~%" (char-name c)))))))
 
 (defun collect-literal (string)
   ;; Pop characters from stream as long as STRING can be read from it,
