@@ -1,3 +1,7 @@
+;; -*-  mode:lisp; coding: utf-8  -*-
+;; Copyright 2017, Soós Péter Levente
+;; Licensed under the MIT license.
+
 (in-package :cl-minion)
 
 (defparameter *ban-bag* '(#\space #\newline #\formfeed #\tab))
@@ -52,13 +56,15 @@
 (defun collect-number ()
   ;; TODO: support scientific notation for big numbers
   (flet ((numeric-p (char) (or (digit-char-p char) (char= char #\.))))
-    (read-from-string 
+    (read-from-string
      (with-output-to-string (s)
+       (when (char= #\- (peek-char t *s* nil))
+         (format s "~a" (read-char *s* nil)))
        (loop :for c = (peek-char t *s* nil)
              :while (numeric-p c)
-             :do  (if (numeric-p c)
-                      (progn (format s "~a" c) (read-char *s* nil))
-                      (error "Unrecognized number format!")))))))
+             :do (if (numeric-p c)
+                     (progn (format s "~a" c) (read-char *s* nil))
+                     (error "Unrecognized number format!")))))))
 
 (defun fail ()
   (error "Syntax error - unrecognized value type."))

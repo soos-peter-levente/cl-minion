@@ -1,3 +1,7 @@
+;; -*-  mode:lisp; coding: utf-8  -*-
+;; Copyright 2017, Soós Péter Levente
+;; Licensed under the MIT license.
+
 (in-package :cl-minion)
 
 (defun val ()
